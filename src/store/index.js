@@ -5,22 +5,35 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    user: {}
+    user: {},
+    loading: true,
+    error: false
   },
   mutations: {
     assignData(state, data){
-      console.log(data)
+      state.user = data;
+      console.log(state.user)
+    },
+    changeLoading(state){
+      state.loading = false
+    },
+    fetchError(state){
+      state.error = true
     }
   },
   actions: {
     async fetchData({commit}){
       try{
-        const response = await fetch(`https://hirng-x2021.glitch.me/api`);
+        const proxyurl = "https://cors-anywhere.herokuapp.com/";
+        const url = `https://hirng-x2021.glitch.me/api`
+        const response = await fetch(proxyurl + url);
         const body = await response.json();
-
         commit('assignData', body);
       }catch(err){
         console.log(err)
+        commit('fetchError');
+      }finally{
+        commit ('changeLoading')
       }
     }
   },
